@@ -1,0 +1,33 @@
+services:
+  db:
+    network_mode: "host" 
+    platform: linux/amd64
+    image: postgres:latest
+    environment:
+        - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+  java:
+    network_mode: "host" 
+    platform: linux/amd64
+    build:
+      context: dnd_java/
+      dockerfile: Dockerfile
+      x-bake:
+        platforms: ["linux/amd64"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  gui:
+    network_mode: "host" 
+    platform: linux/amd64
+    build:
+      context: dnd_flutter/
+      dockerfile: dockerfile
+      x-bake:
+        platforms: ["linux/amd64"]
+    ports:
+      - "80:80"
+    depends_on:
+      - java
